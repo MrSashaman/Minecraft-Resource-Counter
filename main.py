@@ -1,6 +1,7 @@
 import json
 import key
 import socket
+import datetime
 
 hostname = socket.gethostname()
 
@@ -74,8 +75,9 @@ while True:
     print("1.Добавить ресурс")
     print("2.Показать статистику")
     print("3.Сбросить счётчик")
+    print("4. Информация")
 
-    print("4. Выход")
+    print("5. Выход")
 
     choice = input("Выбор: ")
     if choice == "1":
@@ -89,7 +91,14 @@ while True:
             json.dump(resources, f)
         print("Список ресурсов очищен!")
     elif choice == "4":
+        print(F"Дата: {datetime.datetime.now()}!")
+        print("Автор: mrsashaman")
+        print("Версия 2")
+        print("Последнее обновление: 19.03.2026")
+
+    elif choice == "5":
         break
+
     else:
         print("Введите 1, 2 или 3")
 
