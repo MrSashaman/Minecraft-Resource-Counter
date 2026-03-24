@@ -1,5 +1,5 @@
 # Minecraft-Resource-Counter
-Minecraft Resource Counter — подсчёт ресурсов
+Minecraft Resource Counter — подсчёт ресурсов.
 
 Цель проекта:
 Сделать простой инструмент, который помогает игроку подсчитывать добытые ресурсы в Minecraft и понимать, сколько чего у него есть.
