@@ -1,108 +1,103 @@
 import json
-import key
 import socket
 import datetime
+import key
 
-hostname = socket.gethostname()
+FILE = "resources.json"
 
-print("Minecraft Resource Counter")
 
-resources = []
-try:
-    with open("resources.json", "r") as f:
-        resources = json.load(f)
-except FileNotFoundError:
-    resources = []
+def load_resources():
+    try:
+        with open(FILE, "r") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+
+def save_resources(data):
+    with open(FILE, "w") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 
 def auth():
-    while True:
-        if input("Введите ключ доступа: ") == key.KEY:
-            break
-        else:
-            print("Неверный ключ, попробуйте снова")
+    while input("Введите ключ доступа: ") != key.KEY:
+        print("Неверный ключ, попробуйте снова")
 
-def addresource():
+
+def add_resource(data):
     print("Добавить ресурс")
-    name = input("Введите название ресурса: ")
-    count = int(input("Введите количество: "))
-    found = False
+    name = input("Введите название ресурса: ").strip()
 
-    for resource in resources:
-        if resource["name"] == name:
-            resource["count"] += count
-            found = True
-            break
+    try:
+        count = int(input("Введите количество: "))
+    except ValueError:
+        print("Введите число")
+        return
 
-    if not found:
-        resources.append({
-            "name": name,
-            "count": count
-        })
+    for r in data:
+        if r["name"] == name:
+            r["count"] += count
+            save_resources(data)
+            return
 
-    # сохраняем ПОСЛЕ изменений
-    with open("resources.json", "w") as f:
-        json.dump(resources, f)
+    data.append({"name": name, "count": count})
+    save_resources(data)
 
 
-def showstats():
-    total = 0
+def show_stats():
+    data = load_resources()
+    total = sum(r["count"] for r in data)
+
     print("Загружаю статистику!")
-
-    with open("resources.json", "r") as f:
-        loaded_data = json.load(f)
-
-    print(loaded_data)
-
-    for resource in loaded_data:
-        total += resource["count"]
-
+    print(data)
     print(f"Общее количество ресурсов: {total}")
 
 
+def reset(data):
+    data.clear()
+    save_resources(data)
+    print("Список ресурсов очищен!")
 
 
+def info():
+    print(f"Дата: {datetime.datetime.now()}")
+    print("Автор: mrsashaman")
+    print("Версия 2")
+    print("Последнее обновление: 10.04.2026")
 
 
+def main():
+    hostname = socket.gethostname()
+    data = load_resources()
 
-print("*****************LOADING*****************")
-print(f"Приветствую вас, {hostname}!")
+    print("*****************LOADING*****************")
+    print(f"Приветствую вас, {hostname}!")
 
-auth()
+    auth()
 
-while True:
-    print("\nMinecraft Resource Counter".center(30, "*"))
-    print("1.Добавить ресурс")
-    print("2.Показать статистику")
-    print("3.Сбросить счётчик")
-    print("4. Информация")
+    while True:
+        print("\nMinecraft Resource Counter".center(30, "*"))
+        print("1. Добавить ресурс")
+        print("2. Показать статистику")
+        print("3. Сбросить счётчик")
+        print("4. Информация")
+        print("5. Выход")
 
-    print("5. Выход")
+        choice = input("Выбор: ").strip()
 
-    choice = input("Выбор: ")
-    if choice == "1":
-        addresource()
-    elif choice == "2":
-        showstats()
-
-    elif choice == "3":
-        resources.clear()
-        with open("resources.json", "w") as f:
-            json.dump(resources, f)
-        print("Список ресурсов очищен!")
-    elif choice == "4":
-        print(F"Дата: {datetime.datetime.now()}!")
-        print("Автор: mrsashaman")
-        print("Версия 2")
-        print("Последнее обновление: 19.03.2026")
-
-    elif choice == "5":
-        break
-
-    else:
-        print("Введите 1, 2 или 3")
+        if choice == "1":
+            add_resource(data)
+        elif choice == "2":
+            show_stats()
+        elif choice == "3":
+            reset(data)
+        elif choice == "4":
+            info()
+        elif choice == "5":
+            break
+        else:
+            print("Введите число от 1 до 5")
 
 
-
-
-
+if __name__ == "__main__":
+    main()
